@@ -1,5 +1,4 @@
 const { Schema, model } = require('mongoose');
-// const thoughtSchema = require('./Thought');
 
 const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
 
@@ -31,7 +30,10 @@ const userSchema = new Schema ({
 ]
 })
 
-const User = mongoose.model('User', userSchema);
+userSchema.virtual('friendCount').get(function () {
+    return this.friends.length;
+})
 
+const User = model('User', userSchema);
 
 module.exports = User;

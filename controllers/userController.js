@@ -1,48 +1,83 @@
-const { ObjectId } = require('mongoose').Types;
+// const { ObjectId } = require('mongoose').Types;
 const { User, Thought } = require('../models'); 
 
-const userCount = async () => {
+// const userCount = async () => {
+//     const numberOfUsers = await User.aggregate([
 
-    try {
-        const userCounter = [
-            {
+//         {
+//             $count: 'totalUsers'
+//         }
+//     ]);
+//     return numberOfUsers.length > 0 ? numberOfUsers[0].totalUsers : 0;
+// }
 
-            $count:'totalUsers'
-            }
-    
-]; 
-
-const result = await User.aggregate(userCounter);
-
-return result.length > 0 ? result[0].totalUsers : 0;
-
-    } catch (error) {
-        res.status(500).json(error);
-        console.error('Error in count aggregation', error);
-        throw error;
-    }
-};
+// const reactions = async (reactionId) => {
+// const result = await User.aggregate([
 
 
+ // Match User to Reaction ID //
 
-module.exports = userCount;
+    // {
+    //     $match: {
+    //         _id: new ObjectId(reactionId)
+    //     },
+
+    // },
+
+    // Get individual reactions //
+
+//     {
+
+//         $unwind:   '$reactions'
+//         },
+
+//     // Match again to find reactions based on ID
+//     {
+//         match: {
+//             _id: new ObjectId(reactionId)
+//         },
+//     },
+
+//     // Group based on user and reaction ID
+
+//     {
+//         $group: {
+//             _id: '$_id',
+//             username: { $first: '$username' },
+//             reactions: { $push: '$reactions' }
+//         }
+//     }
+
+// ]);
+
+// return result.length > 0 ? result[0] : null
+
+// };
 
 module.exports = {
+
+    // userCount,
+    // reactions,
+
+    // Get users 
 
     async getUsers (req,res) {
         try {
             const users = await User.find();
-        const userObject = {
-            users,
-            userCount: await userCount(),
-        };    
-        return res.json(userObject);
+        // const userObject = {
+        //     users,
+        //     userCount: await userCount(),
+        // };    
+        // return res.json(users);
+        res.status(200).json(users);
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
     }
 
 },
+
+// Get an individual user
 
 async getOneUser (req, res) {
     try {
@@ -73,7 +108,7 @@ async createUser (req, res) {
 
 async deleteUser (req, res) {
     try {
-        const user = await User.findOneAndRemove ({ _id: req.params.userId });
+        const user = await User.findOneAndDelete ({ _id: req.params.userId });
 
         if (!user) {
             return res.status(404).json({ message: 'No user found'})
