@@ -3,6 +3,8 @@ const router = require('express').Router();
 const {
     getUsers,
     getOneUser,
+    addFriend,
+    deleteFriend,
     createUser,
     deleteUser,
     addReaction,
@@ -16,6 +18,10 @@ router.route('/')
 router.route('/:userId')
 .get(getOneUser)
 .delete(deleteUser);
+
+router.route('/:userId/friends/:friendId')
+.post(addFriend)
+.delete(deleteFriend);
 
 router.route('/:userId/reactions')
 .post(addReaction);

@@ -1,74 +1,12 @@
-// const { ObjectId } = require('mongoose').Types;
 const { User, Thought } = require('../models'); 
-
-// const userCount = async () => {
-//     const numberOfUsers = await User.aggregate([
-
-//         {
-//             $count: 'totalUsers'
-//         }
-//     ]);
-//     return numberOfUsers.length > 0 ? numberOfUsers[0].totalUsers : 0;
-// }
-
-// const reactions = async (reactionId) => {
-// const result = await User.aggregate([
-
-
- // Match User to Reaction ID //
-
-    // {
-    //     $match: {
-    //         _id: new ObjectId(reactionId)
-    //     },
-
-    // },
-
-    // Get individual reactions //
-
-//     {
-
-//         $unwind:   '$reactions'
-//         },
-
-//     // Match again to find reactions based on ID
-//     {
-//         match: {
-//             _id: new ObjectId(reactionId)
-//         },
-//     },
-
-//     // Group based on user and reaction ID
-
-//     {
-//         $group: {
-//             _id: '$_id',
-//             username: { $first: '$username' },
-//             reactions: { $push: '$reactions' }
-//         }
-//     }
-
-// ]);
-
-// return result.length > 0 ? result[0] : null
-
-// };
 
 module.exports = {
 
-    // userCount,
-    // reactions,
-
-    // Get users 
+    //Get all users
 
     async getUsers (req,res) {
         try {
             const users = await User.find();
-        // const userObject = {
-        //     users,
-        //     userCount: await userCount(),
-        // };    
-        // return res.json(users);
         res.status(200).json(users);
     } catch (error) {
         console.log(error);
@@ -96,6 +34,8 @@ async getOneUser (req, res) {
     }
 },
 
+// Create a new user
+
 async createUser (req, res) {
     try {
         const user = await User.create(req.body);
@@ -105,6 +45,8 @@ async createUser (req, res) {
         res.status(500).json(error);
     }
 },
+
+// Delete a user
 
 async deleteUser (req, res) {
     try {
@@ -129,12 +71,15 @@ async deleteUser (req, res) {
         res.status(500).json(error);
     }
 },
+
+// Add a reaction to a thought
+
 async addReaction (req, res) {
     console.log('You are adding a reaction');
     console.log(req.body);
 
     try {
-        const user = await User.findOneAndUpdate() (
+        const user = await User.findOneAndUpdate (
             { _id: req.params.userId},
             { $addToSet: {reactions: req.body }},
             { runValidators: true, new: true }
@@ -149,6 +94,8 @@ async addReaction (req, res) {
         res.status(500).json(error);
     }
 },
+
+// Delete a reaction
 
 async removeReaction (req,res) {
     try {
@@ -167,4 +114,43 @@ async removeReaction (req,res) {
         res.status(500).json(error);
     }
 },
+
+async addFriend (req,res) {
+    try {   
+        const friend = await User.findOneAndUpdate (
+            {_id: req.params.userId},
+            { $addToSet: {friends: {friends: req.body.userId} } },
+            { runValidators: true, new: true }
+        );
+
+        if (!friend) {
+            return res.status(404).json({ message: 'No friend found'});
+        }
+
+        res.json(friend);
+
+    } catch (error) {
+        res.status(500).json(({ message: 'Database error', error}));
+    }
+},
+
+async deleteFriend (req,res) {
+    try {
+        const friend = await User.findOneAndUpdate(
+            { _id: req.params.userId },
+            { $pull: {friends: { friends: req.body.friendId }}},
+            {runValidators: true, new: true}
+            );
+
+        if (!friend) {
+            return res.status(404)({ message: 'No friend found' });
+        }
+
+        res.json({ message: 'Friend deleted' });
+    } catch (error) {
+    res.status(500).json({ message: 'Database error while deleting friend', error})
+    }
+}
+
+
 };

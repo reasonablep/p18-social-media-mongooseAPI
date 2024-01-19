@@ -38,4 +38,4 @@ return moment(timestamp).format('YYYY:MM:DD');
 
 const Thought = model('Thought', thoughtSchema);
 
-module.exports = Thought;w
+module.exports = Thought;
