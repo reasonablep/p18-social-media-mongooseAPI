@@ -117,9 +117,10 @@ async removeReaction (req,res) {
 
 async addFriend (req,res) {
     try {   
+
         const friend = await User.findOneAndUpdate (
             {_id: req.params.userId},
-            { $addToSet: {friends: {friends: req.body.userId} } },
+            { $addToSet: {friends: req.body.ObjectId } },
             { runValidators: true, new: true }
         );
 
